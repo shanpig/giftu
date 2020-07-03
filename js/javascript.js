@@ -25,18 +25,56 @@ const collapse = ()=>{
   $("#navbarNav").collapse('hide')
 }
 
-// set link hightlight for clicked nav-item
+// set link highlight for clicked nav-item
+const changeActiveFromTo = (from, to)=>{
+  from.classList.remove('active')
+  to.classList.add("active")
+}
 $(()=>{
   let links = document.querySelectorAll('.nav-item')
   for (let i=0; i<links.length; i++){
     links[i].addEventListener("click", (e)=>{
       let active_link = document.querySelector(".active")
       let clicked_link = links[i]
-      active_link.classList.remove('active')
-      clicked_link.classList.add("active")
+      changeActiveFromTo(active_link, clicked_link)
     })
   }
 })
+
+
+
+//set link highlight for scroll and resize
+let about_us_scroll, ser_feedback_scroll, user_feedback_scroll, contact_us_scroll, active_scroll;
+$(()=>{
+  recalculateScroll()
+  window.onresize = recalculateScroll
+  window.onscroll = trackNavHighlight
+})
+
+const recalculateScroll = ()=>{
+  about_us_scroll = Math.floor(document.querySelector('#about_us').offsetTop)
+  service_intro_scroll = Math.floor(document.querySelector('#service_intro').offsetTop)
+  user_feedback_scroll = Math.floor(document.querySelector('#user_feedback').offsetTop)
+  contact_us_scroll = Math.floor(document.querySelector('#contact_us').offsetTop)
+  active_scroll = Math.floor(document.querySelector('.active').offsetTop)
+  // console.log(window_scroll, '\n', about_us_scroll, '\n', user_feedback_scroll, '\n', contact_us_scroll)
+}
+
+const trackNavHighlight = ()=>{
+  let active_element = document.querySelector('.active')
+  let active_element_id = active_element.firstElementChild.attributes.href.textContent
+  if (Math.abs(window.scrollY-active_scroll)>window.innerHeight/2){
+    let arr = [
+      [Math.abs(window.scrollY-about_us_scroll),'#about_us'],
+      [Math.abs(window.scrollY-service_intro_scroll),'#service_intro'],
+      [Math.abs(window.scrollY-user_feedback_scroll),'#user_feedback'],
+      [Math.abs(window.scrollY-contact_us_scroll),'#contact_us']
+    ]
+    arr.sort((a, b)=>{return a[0]-b[0]})
+    // console.log(arr)
+    arr[0][1] == active_element_id? console.log(): changeActiveFromTo(active_element, document.querySelector(`${arr[0][1]}_link`))
+  }
+}
 
 // show the popup details of different services
 const service = [{
